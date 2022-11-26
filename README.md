@@ -285,11 +285,43 @@ check_line:
 
 ### Рефакторинг
 
-Был проведен рефакторинг программы за счет использования регистров r12-r15.\
+Был проведен рефакторинг программы за счет использования регистров (r13-r15).\
+Сокращены ненужные переносы из одного регистра в другой.\
 Добавлены комментарии, поясняющие изменения (6 баллов).
-
 ```assembly
-
+main:
+ ```
+```assembly
+.L30:
+	lea	rax, -96[rbp]
+	mov	rdi, rax
+	call	check_line
+	test	eax, eax
+	jne	.L31
+	movsd	xmm6, QWORD PTR -48[rbp] # p[3].x
+	movsd	xmm7, QWORD PTR -40[rbp] # p[3].y
+	movsd	xmm4, QWORD PTR -64[rbp] # p[2].x
+	movsd	xmm5, QWORD PTR -56[rbp] # p[2].y
+	movsd	xmm2, QWORD PTR -80[rbp] # p[1].x
+	movsd	xmm3, QWORD PTR -72[rbp] # p[1].y
+	movsd	xmm0, QWORD PTR -96[rbp] # p[0].x
+	movsd	xmm1, QWORD PTR -88[rbp] # p[0].y
+	call	check_circle
+	test	eax, eax
+	jne	.L29
+	movsd	xmm4, QWORD PTR -80[rbp] # p[1].x
+	movsd	xmm5, QWORD PTR -72[rbp] # p[1].y
+	movsd	xmm2, QWORD PTR -64[rbp] # p[2].x
+	movsd	xmm3, QWORD PTR -56[rbp] # p[2].y
+	call	check_circle
+	test	eax, eax
+	jne	.L29
+	movsd	xmm6, QWORD PTR -80[rbp] # p[1].x
+	movsd	xmm7, QWORD PTR -72[rbp] # p[1].y
+	movsd	xmm4, QWORD PTR -48[rbp] # p[3].x
+	movsd	xmm5, QWORD PTR -40[rbp] # p[1].y
+	call	check_circle
+	test	eax, eax
 ```
 
 Остальные изменения можно найти в prog3.s.

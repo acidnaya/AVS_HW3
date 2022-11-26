@@ -342,7 +342,7 @@ main:
 
 Сравнение размеров объектных и исполняемых файлов:
 
-![Размер](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/size.png)
+![Размер](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/sizenew.png)
 
 ### Тестирование всех вариантов программ
 

@@ -93,56 +93,192 @@ gcc prog2.s -c
  gcc prog2.o -o prog2 -lm
 ```
 
-![Процесс](https://github.com/acidnaya/AVS_HW2/blob/main/screenshots/processing.png)
+![Процесс](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/processing.png)
 
 ### Комментарии 
 
 Комментарии, поясняющие представление переменных в main(4 балла):
 ```assembly
-
+main:
+ ```
+ ```assembly
+	mov	DWORD PTR -88[rbp], 0 # DWORD PTR -88[rbp] - int i
+ ```
+ ```assembly
+.L28:
+ ```
+ ```assembly
+	lea	rdx, -80[rbp] # -80[rbp] - points p
 ```
 
 Комментарии, поясняющие представление локальных переменных в функциях (5 баллов):
 ```assembly
-
+check_equal:
+	push	rbp
+	mov	rbp, rsp
+	sub	rsp, 32
+	mov	QWORD PTR -24[rbp], rdi # p
+	mov	DWORD PTR -4[rbp], 0 # локальная переменная equals
+	mov	DWORD PTR -12[rbp], 0 # локальная переменная i
+	jmp	.L16
+.L20:
+	mov	eax, DWORD PTR -12[rbp]
+	add	eax, 1
+	mov	DWORD PTR -8[rbp], eax # локальная переменная j
+	jmp	.L17
 ```
 ```assembly
-
+check_line:
 ```
 ```assembly
-
+	movsd	QWORD PTR -16[rbp], xmm0 # локальная переменная k
+	mov	rax, QWORD PTR -24[rbp]
+	movsd	xmm0, QWORD PTR 8[rax]
+	mov	rax, QWORD PTR -24[rbp]
+	movsd	xmm1, QWORD PTR [rax]
+	mulsd	xmm1, QWORD PTR -16[rbp]
+	subsd	xmm0, xmm1
+	movsd	QWORD PTR -8[rbp], xmm0 # локальная переменная b
 ```
 
 Комментарии, поясняющие передачу переменных в функции и перенос возвращаемого результата (5 баллов):
 ```assembly
-
+dist:
+ ```
+ ```assembly
+	mov	QWORD PTR -16[rbp], rax # a.x
+	mov	QWORD PTR -8[rbp], rdx # a.y
+	movapd	xmm1, xmm2
+	movapd	xmm0, xmm3
+	mov	eax, 0
+	mov	edx, 0
+	movq	rax, xmm1
+	movq	rdx, xmm0
+	mov	QWORD PTR -32[rbp], rax # b.x
+	mov	QWORD PTR -24[rbp], rdx # b.y
 ```
 ```assembly
-
+	call	pow@PLT # вызов pow с xmm0 - xmm1
+	movsd	QWORD PTR -40[rbp], xmm0 # результат функции
+	movsd	xmm0, QWORD PTR -8[rbp]
+	movsd	xmm1, QWORD PTR -24[rbp]
+	movapd	xmm4, xmm0
+	subsd	xmm4, xmm1
+	movq	rax, xmm4
+	movsd	xmm0, QWORD PTR .LC0[rip]
+	movapd	xmm1, xmm0 # 2
+	movq	xmm0, rax # a.y - b.y
+	call	pow@PLT # вызов pow с xmm0 - xmm1
+	movapd	xmm5, xmm0 # результат функции
+	addsd	xmm5, QWORD PTR -40[rbp]
+	movq	rax, xmm5
+	movq	xmm0, rax # сумма квадратов
+	call	sqrt@PLT # вызов sqrt с xmm0
+	movq	rax, xmm0 # результат
+	movq	xmm0, rax # возвращаем результат через xmm0
 ```
 ```assembly
+accurate_equal:
+	push	rbp
+	mov	rbp, rsp
+	movsd	QWORD PTR -8[rbp], xmm0 # num
+	movsd	QWORD PTR -16[rbp], xmm1 # check
+	movsd	QWORD PTR -24[rbp], xmm2 # accuracy
+	movsd	xmm0, QWORD PTR -8[rbp]
+	subsd	xmm0, QWORD PTR -16[rbp]
+	movq	xmm1, QWORD PTR .LC1[rip]
+	andpd	xmm1, xmm0
+	movsd	xmm0, QWORD PTR -24[rbp]
+	comisd	xmm0, xmm1
+	seta	al
+	movzx	eax, al # результат функции
+	pop	rbp
+	ret
+```
 
+```assembly
+check_circle:
 ```
 ```assembly
-
+	mov	QWORD PTR -32[rbp], rax # a.x
+	mov	QWORD PTR -24[rbp], rdx # a.y
 ```
 ```assembly
-
+ mov	QWORD PTR -48[rbp], rax # b.x
+	mov	QWORD PTR -40[rbp], rdx # b.y
 ```
 ```assembly
-
+	mov	QWORD PTR -64[rbp], rax # c.x
+	mov	QWORD PTR -56[rbp], rdx # c.y
 ```
 ```assembly
-
+	mov	QWORD PTR -80[rbp], rax # d.x
+	mov	QWORD PTR -72[rbp], rdx # d.y
 ```
 ```assembly
-
+	mov	rax, QWORD PTR -32[rbp] # a.x
+	movsd	xmm1, QWORD PTR -24[rbp] # a.y в xmm1
+	movapd	xmm3, xmm0  # c.y в xmm3
+	movq	xmm0, rax # a.x в xmm0
+	call	dist # вызов dist с xmm0 - xmm3
 ```
 ```assembly
+movsd	QWORD PTR -8[rbp], xmm0 # double res
+	movsd	xmm0, QWORD PTR .LC2[rip]
+	mov	rax, QWORD PTR -8[rbp]
+	movapd	xmm2, xmm0 # 0.00001
+	pxor	xmm1, xmm1 # 0
+	movq	xmm0, rax # res
+	call	accurate_equal # вызов dist с xmm0 - xmm2
+	leave
+	ret # возврат результата функции accurate_equal из функции check_circle через eax
+```
 
+```assembly
+equal_points:
 ```
 ```assembly
+	mov	QWORD PTR -16[rbp], rax # a.x
+	mov	QWORD PTR -8[rbp], rdx # a.y
+```
+```assembly
+	mov	QWORD PTR -32[rbp], rax # b.x
+	mov	QWORD PTR -24[rbp], rdx # b.y
+```
+```assembly
+	mov	eax, 1 # результат работы функции помещен в eax
+	jmp	.L12
+.L8:
+	mov	eax, 0 # результат работы функции помещен в eax
+.L12:
+	pop	rbp
+	ret
+```
 
+```assembly
+check_equal:
+```
+```assembly
+.L16:
+	cmp	DWORD PTR -12[rbp], 3
+	jle	.L20
+	mov	eax, DWORD PTR -4[rbp] # перенос equals в eax - результат работы функции
+```
+```assembly
+check_line:
+```
+```assembly
+	movq	rax, xmm0
+	movsd	xmm0, QWORD PTR .LC2[rip]
+	movapd	xmm2, xmm0 # 0.00001
+	movq	xmm0, rax # k * p[3].x + b, p[3].y
+	call	accurate_equal # вызов функции accurate_equal с xmm0 - xmm2
+	test	eax, eax
+	je	.L23
+	mov	eax, 1 # результат работы функции помещен в eax
+	jmp	.L25
+.L23:
+	mov	eax, 0 # результат работы функции помещен в eax
 ```
 
 Чуть более полную версию комментариев можно найти в prog2.s.
@@ -158,9 +294,9 @@ gcc prog2.s -c
 
 Остальные изменения можно найти в prog3.s.
 
-Как итог: 371 строк prog1.s против 423 строк prog3.s, включая комментарии, поясняющие замену на регистры.
+Как итог: 583 строк prog1.s против 504 строк prog3.s.
 
-![Длина](https://github.com/acidnaya/AVS_HW2/blob/main/screenshots/length.png)
+![Длина](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/size.png)
 
 ### Тестирование всех вариантов программ
 
@@ -172,4 +308,16 @@ gcc prog2.s -c
 |||||
 |||||
 
-![Тестирование](https://github.com/acidnaya/AVS_HW2/blob/main/screenshots/testing.png)
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing1.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing2.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing3.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing4.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing5.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing6.png)
+
+![Тестирование](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/testing7.png)

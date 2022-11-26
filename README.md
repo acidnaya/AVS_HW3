@@ -340,9 +340,9 @@ main:
 
 Остальные изменения можно найти в prog3.s.
 
-Как итог: 583 строк prog1.s против 504 строк prog3.s.
+Сравнение размеров объектных и исполняемых файлов:
 
-![Длина](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/size.png)
+![Размер](https://github.com/acidnaya/AVS_HW3/blob/main/screenshots/size.png)
 
 ### Тестирование всех вариантов программ
 
